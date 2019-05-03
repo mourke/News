@@ -6,9 +6,6 @@ public PFont subtitleFont;
 public PFont textFont;
 public PFont captionFont;
 
-Graph graph1;
-timeFilter filter1;
-
 MainWindow currentWindow;
 
 void settings() {
@@ -29,7 +26,7 @@ void setup() {
       } else {
         comments.add(new Comment(object));
       }
-    } 
+    }
     catch (Exception e) {
       println(e);
     }
@@ -42,15 +39,10 @@ void setup() {
 
   MainWindow mainWindow = new MainWindow(stories, comments);
   currentWindow = mainWindow;
-
-  //filter1 = new timeFilter(stories); 
-  //graph1 = new Graph(filter1.startTime(2006,40), stories);
 }
 
 void draw() {
   currentWindow.draw();
-
-  // graph1.draw();
 }
 
 void mousePressed() {
