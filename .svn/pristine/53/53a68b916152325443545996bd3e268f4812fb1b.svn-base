@@ -1,0 +1,12 @@
+class Window extends Widget {
+  
+  private Widget contentWidget;
+  
+  Window(Widget contentWidget) {
+    super(new Rect(0, 0, width, height));
+    this.contentWidget = contentWidget;
+    this.contentWidget.frame = this.frame;
+    
+    addChildWidget(contentWidget);
+  }
+}

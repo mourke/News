@@ -1,0 +1,322 @@
+import java.io.*; //<>//
+import java.util.*;
+int query;  // 
+ArrayList<Widget> widgets;
+ArrayList<Graph> graphs;
+ArrayList<Comment> comments;
+ArrayList<Story> stories;
+ArrayList<Item> keywordMatches;
+
+ArrayList<Comment> matchingComments;
+ArrayList<Story> matchingStories;
+Textbox queryTextbox; // usernames
+Textbox keywordTextbox;
+Graph graph1;
+ArrayList<RadioButton> usernameSearchOptions;
+
+DropDownMenu queryOptions;
+
+PImage search;
+PFont widgetFont;
+PFont usernameFont;
+PFont userpageContentHeader;
+PFont widgetFontLarger;
+
+UserPage testUserPage; 
+
+void settings() {
+  size(SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
+void setup() {
+  //declare separate arraylists for comment and story
+  comments = new ArrayList<Comment>();
+  stories = new ArrayList<Story>();
+
+  search = loadImage("search.png");
+  usernameFont = loadFont("Ebrima-Bold-64.vlw");
+  userpageContentHeader = loadFont("Ebrima-Bold-32.vlw");
+  widgetFont = loadFont("LeelawadeeUI-Semilight-32.vlw");
+  widgetFontLarger = loadFont("LeelawadeeUI-Semilight-48.vlw");
+  textFont(widgetFont);
+
+  query = QUERY_DEFAULT;    // start by displaying default query
+  graphs = new ArrayList<Graph>();
+  //Create widgets array
+  widgets = new ArrayList<Widget>();
+
+  // parse json file
+  JSONArray array = loadJSONArray("news.json");
+
+  // sort json entries into stories and comments
+  for (int i = 0; i < array.size(); ++i) {
+    JSONObject object = array.getJSONObject(i);
+    try {
+      if (object.getString("type").equals("story")) {
+        stories.add(new Story(object));
+      } else {
+        comments.add(new Comment(object));
+      }
+    } 
+    catch (Exception e) {
+      println("line " + i + ": " + e);
+    }
+  }
+
+  //test querying comments by username:
+  String username = "andres";
+  println("Querying comments & stories by: " + username);
+  matchingComments = getCommentsByUsername(comments, username);
+  matchingStories = getStoriesByUsername(stories, username);
+  //for (Comment c : matchingComments) {
+  //  println(c);
+  //}
+  //for (Story s : matchingStories) {
+  //  println(s);
+  //}
+
+  //Widget w = new Widget(0,0);
+  //widgets.add(w);
+  graph1 = new Graph(0, 0, 0, graphs, "", 1553174124, stories);
+  queryTextbox = new Textbox(50, 50, TEXTBOX_USERNAME);
+  keywordTextbox = new Textbox(50, 300, TEXTBOX_KEYWORD);
+
+  textSize(QUERY_TEXT_SIZE);
+
+  //query = QUERY_COMMENT_BY_USERNAME;
+  query = QUERY_STORY_BY_USERNAME;
+
+  usernameSearchOptions = new ArrayList<RadioButton>();
+  RadioButton commentByUsername = new RadioButton(50, 150, EVENT_COMMENTS_BY_USERNAME, usernameSearchOptions, "Comments: ");
+  RadioButton storyByUsername = new RadioButton(350, 150, EVENT_STORIES_BY_USERNAME, usernameSearchOptions, "Stories: ");
+  usernameSearchOptions.add(commentByUsername);
+  usernameSearchOptions.add(storyByUsername);
+
+  queryOptions = new DropDownMenu(width/2, height/2, EVENT_DROP_DOWN, "Queries");
+  //DropDownMenu parent, ArrayList<DropDownItem> dropDownGroup, int event, String label
+  queryOptions.addDescendent(EVENT_DROP_DOWN_TEST1, "test");
+  queryOptions.addDescendent(EVENT_DROP_DOWN_TEST2, "test2");
+
+  //testing User class
+  User testUser = new User("zaidf");
+  println(testUser.topScore);  //works
+  println(testUser.numContributions);  //works
+  println(testUser.lastActivity);  //works
+
+  testUserPage = new UserPage(testUser);
+}
+
+
+void draw() {
+  // ... visual representation of query ...
+  background(0);
+  textFont(widgetFont);
+  fill(255);
+  switch (query) {
+    case (QUERY_COMMENT_BY_USERNAME):
+    String output = "";
+    for (Comment c : matchingComments) {
+      output=output+c.toString().replaceAll("\\<[^>]*>", "")+"\n\n";
+      text(output, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    }
+    break;
+    case (QUERY_STORY_BY_USERNAME):
+    output = "";
+    for (Story s : matchingStories) {
+      output=output+s.toString()+"\n\n";
+      text(output, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    }
+    break;
+    case (QUERY_STORY_BY_KEYWORD):
+    output = "";
+    for (Item s : keywordMatches) {
+      output=output+s.toString()+"\n\n";
+      text(output, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    }
+    break;
+  }
+
+  queryTextbox.draw();
+  keywordTextbox.draw();
+
+  for (RadioButton r : usernameSearchOptions) {
+    r.draw();
+  }
+
+  queryOptions.draw();
+  testUserPage.draw();
+}
+//for (Widget w: widgets) {
+//  w.draw();
+//}
+//}
+
+ArrayList<Comment> getCommentsByUsername(ArrayList<Comment> comments, String username) {
+  ArrayList<Comment> commentsByUsername = new ArrayList<Comment>();
+
+  for (Comment c : comments) {
+    try {
+      if (c.author().equalsIgnoreCase(username)) {
+        commentsByUsername.add(c);
+      }
+    } 
+    catch (Exception e) {
+      //println("Error matching username: " + c + ": " + e);
+    }
+  }
+
+  return commentsByUsername;
+}
+
+ArrayList<Story> getStoriesByUsername(ArrayList<Story> stories, String username) {
+  ArrayList<Story> storiesByUsername = new ArrayList<Story>();
+
+  for (Story s : stories) {
+    try {
+      if (s.author().equalsIgnoreCase(username)) {
+        storiesByUsername.add(s);
+      }
+    } 
+    catch (Exception e) {
+      //println("Error matching username: " + s + ": " + e);
+    }
+  }
+
+  return storiesByUsername;
+}
+
+void mousePressed() {
+  // store widgets appropriately
+  if (queryTextbox.withinBounds(mouseX, mouseY)) {
+    queryTextbox.click();
+  } else {
+    queryTextbox.deselect();
+  }
+  if (keywordTextbox.withinBounds(mouseX, mouseY)) {
+    keywordTextbox.click();
+  } else {
+    keywordTextbox.deselect();
+  }
+  for (RadioButton r : usernameSearchOptions) {
+    if (r.widgetClicked(mouseX, mouseY)) {
+      r.select();
+      if (r.event() == EVENT_COMMENTS_BY_USERNAME) {
+        query = QUERY_COMMENT_BY_USERNAME;
+      } else if (r.event() == QUERY_STORY_BY_USERNAME) {
+        query = QUERY_STORY_BY_USERNAME;
+      }
+    }
+  }
+
+
+  if (queryOptions.isSelected()) {
+    for (DropDownItem d : queryOptions.descendents()) {
+      if (d.widgetClicked(mouseX, mouseY)) {
+        if (d.event() == EVENT_DROP_DOWN_TEST1) {
+          print("test1");
+        } else if (d.event() == EVENT_DROP_DOWN_TEST2) {
+          print("test2");
+        }
+      }
+    }
+  }
+
+  if (queryOptions.widgetClicked(mouseX, mouseY)) {
+    queryOptions.select();
+  } else {
+    queryOptions.deselect();
+  }
+  
+  if (!testUserPage.itemActive()) {
+    println("Item inactive");
+    if (testUserPage.contentPaneActive()) {  // runs after second click in content pane
+      testUserPage.setActiveItem(mouseY);
+    }
+
+    if (testUserPage.contentPaneClicked(mouseX, mouseY)) {
+      testUserPage.setContentPaneActive();
+    } else {
+      testUserPage.setContentPaneInactive();
+    }
+  } else {
+    println("item active");
+    //if (testUserPage.linkClicked()) {
+    //  testUserPage.openLink();
+    //}
+    testUserPage.toggleActiveItem();
+  }
+}
+
+void keyPressed() {
+  if (queryTextbox.isSelected()) {
+    if (key == BACKSPACE) {
+      queryTextbox.removeChar();
+    } else if (key == ENTER) {
+      queryTextbox.submitQuery();
+    } else {
+      queryTextbox.appendCharacter(key);
+    }
+  }
+  if (keywordTextbox.isSelected()) {
+    if (key == BACKSPACE) {
+      keywordTextbox.removeChar();
+    } else if (key == ENTER) {
+      keywordTextbox.submitQuery();
+    } else {
+      keywordTextbox.appendCharacter(key);
+    }
+  }
+  if (testUserPage.contentPaneActive()) {
+    if (keyCode == RIGHT) {
+      testUserPage.advanceContent();
+    } else if (keyCode == LEFT) {
+      testUserPage.retreatContent();
+    }
+  }
+}
+
+//As per the project specification, the goal this week is to display the 
+//results of at least one query on the screen.
+
+//Thus, the minimal program will:
+
+// - read in and store the data from the JSON file. DONE
+
+// - run a simple query (e.g. stories matching a particular username), store the
+//results of this query, and set the current query type to be that query.
+
+// - (in draw()) draw the results of the current query using a combination of text
+//and graphics (e.g. bar chart of the number of comments on these stories).
+//int i = 0;
+//for (int y = QUERY_TEXT_SIZE; y + QUERY_TEXT_SIZE < SCREEN_HEIGHT && i < matchingComments.size(); y+=QUERY_TEXT_SIZE) {
+//  String s = matchingComments.get(i).toString();
+//  text(s, 0, y);
+//  //adjust y pos of next string in case of multiple lines.
+//  String[] linesInComment = s.split("\n");
+//  y+= QUERY_TEXT_SIZE * linesInComment.length;
+//  i++;
+
+void setUsername(String s) {
+  matchingComments = getCommentsByUsername(comments, s);
+  matchingStories = getStoriesByUsername(stories, s);
+  query = QUERY_COMMENT_BY_USERNAME;
+  for (RadioButton r : usernameSearchOptions) {
+    if (r.event() == QUERY_COMMENT_BY_USERNAME) {
+      r.select();
+    }
+  }
+}
+
+void setKeyword(String s) {
+  keywordMatches = new ArrayList<Item>();
+  //search stories for keyword
+  for (Story story : stories) {
+    if (story.title()!=null) {
+      String title = story.title().toLowerCase();
+      if (title.contains(s.toLowerCase())) {
+        keywordMatches.add(story);
+      }
+    }
+  }
+  query = QUERY_STORY_BY_KEYWORD;
+}

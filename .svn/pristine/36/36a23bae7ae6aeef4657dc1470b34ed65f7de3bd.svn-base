@@ -1,0 +1,48 @@
+import java.io.*; 
+import java.util.*;
+class timeFilter extends Widget{
+  int firstAvailableDate;
+  int lastAvailableDate;
+  int dayLength = 86400;
+  java.util.Date time;
+  java.util.Date time2;
+  
+  public timeFilter(ArrayList<Story> storiesList){
+    int tempStartDate = 0;
+    int tempEndDate = 0;
+    Story tempStory1 = storiesList.get(0);
+    tempStartDate = tempStory1.getTime();
+    for(int index = 1; index < storiesList.size(); index++){
+      tempStory1 = storiesList.get(index);
+     if(tempStartDate >= tempStory1.getTime()){
+       tempStartDate = tempStory1.getTime(); //<>//
+     }
+     
+     if(tempEndDate <= tempStory1.getTime()){
+       tempEndDate = tempStory1.getTime();
+     }
+      
+    }
+    this.firstAvailableDate = tempStartDate - (tempStartDate % dayLength);
+    this.lastAvailableDate = tempEndDate - (tempEndDate % dayLength); //<>//
+    time=new java.util.Date((long)firstAvailableDate*1000); //<>//
+    time2=new java.util.Date((long)lastAvailableDate*1000);
+    
+    
+  }
+  
+  void printTime(){
+    println(time);
+    println(time2);
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+}

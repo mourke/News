@@ -1,0 +1,160 @@
+import java.io.*; //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+import java.util.*;
+class Graph extends Widget {
+  private ArrayList <Story> storyArray;
+  private ArrayList <Graph> graphArray;
+  int[] highestScoreOrder = new int[5];
+  int placeInOrder;
+  private Map<Long, Item> mainMap=new TreeMap<Long, Item>();
+  int chart[];
+  int s;
+  int timeB;
+  int timeA;
+  int barX = 100;
+  int amountOfdays;
+  int widthOfbars;
+
+  public Graph(int xpos, int ypos, int event, ArrayList<Graph> graphArray, String label, int timeA, ArrayList<Story> storyArray, int window) {    
+    super(xpos, ypos, WIDGET_HEIGHT, WIDGET_WIDTH, color(255), color(0), label, event);
+    this.graphArray = graphArray;
+    this.storyArray = storyArray;
+    this.mainMap = mainMap;
+    s = 1160423503;
+    timeA = s;
+    chart = new int[window];
+    amountOfdays = window;
+  }
+
+  @Override
+    public void draw () {
+    //background(255); 
+    textSize(WIDGET_TEXT_SIZE);
+    fill(255);
+    //for (int clear = 0; clear <5; clear++) {
+    //  highestScoreOrder[clear] = 0;
+    //}
+
+    text(label(), xpos(), ypos());
+    widthOfbars = (int) 800 / amountOfdays;
+    int currentDay = s;
+
+
+    //  for(int index = 0;index < chart.length;index++) {
+    //  println(index);
+
+    //  chart[index] = this.getHeight(storyArray, currentDay);
+    //  currentDay = currentDay + 86400 ;
+    //}
+    //rect(250,250,400,400);
+    //barX =50;
+    //  for (int idx= 0; idx<chart.length; idx++) {
+    //  fill(75, 75, 75);
+    //  println(chart[idx]);
+    //  rect(barX, 1080-50-(chart[idx]*15), 50, chart[idx]*15);
+    //  text(("day "+(idx+1)),barX, 1080-40,150,50);
+    //  barX += widthOfbars;
+    //}
+    getHighestScores(storyArray, currentDay);
+    barX = 100;
+    for (int index = 0; index < highestScoreOrder.length; index++) {
+      fill(75, 75, 75);
+      rect(barX, 1080-80-( getScoreHeight( storyArray, index) *15), 50, getScoreHeight( storyArray, index) *15);
+      text(("score "+(getScoreHeight( storyArray, index))), barX, 1080-70, 150, 50);
+      text(("A: " +(getAuthor( storyArray, index))), barX, 1080-40, 150, 50);
+      barX += widthOfbars;
+    }
+  }
+
+
+
+
+
+
+
+
+  int getHeight(ArrayList<Story> storyArray, int timeA) {
+    int freqCount = 0;
+    println(timeA);
+    timeB = timeA + 86400 ; //<>//
+    for (int i = 0; i < storyArray.size(); i++) {
+      Story tempStory = storyArray.get(i);
+
+      if (tempStory.getTime() >= timeA && tempStory.getTime() <= timeB) { //<>//
+        freqCount++;
+      } //<>//
+    }
+    println(freqCount);
+    return freqCount;
+  }
+
+  void getHighestScores(ArrayList<Story> storyArray, int timeA) {
+    placeInOrder = 5;
+    int timeB = timeA + 86400;
+    //ArrayList<Integer> kids = new ArrayList<Integer>();
+    //Date releaseDate = 0;
+    //Story clearStory = new Story(0, URL url, "Clear",  0, kids, Date releaseDate, -1, "Admin", STORY);
+    //for(int clearer = 0; clearer < highestScoreOrder.length; clearer++){
+    //  highestScoreOrder[clearer] = -1;
+    //}
+    
+    for (int i = 0; i < storyArray.size(); i++) {
+
+      Story tempStory1 = storyArray.get(i);
+      //checks if first story within time
+      if (tempStory1.getTime() >= timeA && tempStory1.getTime() <= timeB) {
+        //loop to check against other stories
+        out2 : for (int index = i; index < storyArray.size(); index++) {
+
+          Story tempStory2 = storyArray.get(index);
+
+          if (tempStory2.getTime() >= timeA && tempStory2.getTime() <= timeB) { //<>//
+
+            if (tempStory2.score() > tempStory1.score() && index != i ) { //<>//
+
+              for (int j = highestScoreOrder.length-1; j >= 0; j--) { //<>//
+
+                 if (  storyArray.get(highestScoreOrder[j]).score() < tempStory2.score()) { //<>//
+                      for (int arrayShifter = 0; arrayShifter < j; arrayShifter++) {     
+                        
+                      highestScoreOrder[arrayShifter] = highestScoreOrder[arrayShifter+1];
+                      }
+                    highestScoreOrder[j] = index; //<>//
+                    break out2; //<>//
+                    
+                     //<>//
+                  }
+              }
+              } else {
+                 //<>//
+               for (int j = highestScoreOrder.length-1; j >= 0; j--) {
+                      Story check = storyArray.get(highestScoreOrder[j]); //<>//
+                  if ( check.score() < tempStory1.score() ) {
+                      for (int arrayShifter = 0; arrayShifter < j; arrayShifter++) {      
+                      highestScoreOrder[arrayShifter] = highestScoreOrder[arrayShifter+1];
+                      }
+                    highestScoreOrder[j] = i;
+                    break out2;
+                    
+                    
+                  }
+                }
+                }
+               }
+            }
+        }
+      }
+   }
+
+int getScoreHeight(ArrayList<Story> storyArray, int index) {
+  return storyArray.get(highestScoreOrder[index]).score();
+}
+String getAuthor(ArrayList<Story> storyArray, int index) {
+  return storyArray.get(highestScoreOrder[index]).author();
+}
+Date getStartingDate() {
+  return new Date(s * 1000);
+}
+Date getEndDate() {
+  return new Date(timeB * 1000);
+}
+}

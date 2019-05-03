@@ -1,0 +1,12 @@
+//static class TimeComparater implements Comparator<Story>{
+  
+//    public int compare(Story storyA, Story storyB) 
+//    { 
+//        int retval =  storyA.getTime().compareTo(storyB.getTime());
+//        return retval; 
+//    } 
+ 
+  
+  
+  
+//}

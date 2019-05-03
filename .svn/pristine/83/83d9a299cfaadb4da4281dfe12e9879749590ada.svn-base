@@ -1,0 +1,149 @@
+final int SCREEN_HEIGHT = 750;
+final int SCREEN_WIDTH = 1000;
+
+public PFont titleFont;
+public PFont subtitleFont;
+public PFont textFont;
+public PFont captionFont;
+Graph graph1;
+timeFilter filter1;
+CommentNumberComparator commentSorter = new CommentNumberComparator();
+HighestRatedComparator ratingSorter = new HighestRatedComparator();
+ArrayList<Story> stories = new ArrayList<Story>();
+ArrayList<Story> mostComments = new ArrayList<Story>();
+ArrayList<Story> highRated = new ArrayList<Story>();
+
+
+MainWindow currentWindow;
+
+
+void settings() {
+  size(SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
+void setup() {
+  ArrayList<Comment> comments = new ArrayList<Comment>();
+
+
+
+
+
+  JSONArray array = loadJSONArray("news.json");
+
+  for (int i = 0; i < array.size(); ++i) {
+    JSONObject object = array.getJSONObject(i);
+    try {
+      if (object.getString("type").equals("story")) {
+        stories.add(new Story(object));
+      } else {
+        comments.add(new Comment(object));
+      }
+    } 
+    catch (Exception e) {
+      println(e);
+    }
+  }
+
+
+  boolean sort = false;
+
+  titleFont = loadFont("titleFont.vlw");
+  subtitleFont = loadFont("subtitleFont.vlw");
+  textFont = loadFont("textFont.vlw");
+  captionFont = loadFont("captionFont.vlw");
+
+  highRated = getHighRatedStories(stories);
+
+  mostComments = getMostCommentedStories(stories);
+
+  MainWindow mainWindow = new MainWindow();
+
+  mainWindow.setDataSource(stories);
+
+  currentWindow = mainWindow;
+  mainWindow.tableWidget.reloadData();
+
+
+  //filter1 = new timeFilter(stories); 
+  //graph1 = new Graph(filter1.startTime(2006,40), stories);
+}
+
+void draw() {
+  currentWindow.draw();
+
+  // graph1.draw();
+}
+
+void mousePressed() {
+  if (mouseY <= 100) {
+    if (currentWindow.indexState == 2 ) {
+      currentWindow.setDataSource(mostComments);
+    } else if (currentWindow.indexState == 1) {
+      currentWindow.setDataSource(highRated);
+    } else {
+      currentWindow.setDataSource(stories);
+    }
+  }
+  currentWindow.mousePressed();
+
+}
+
+void mouseMoved() {
+  currentWindow.mouseMoved();
+}
+
+void mouseReleased() {
+  currentWindow.mouseReleased();
+}
+
+void mouseDragged() {
+  currentWindow.mouseDragged();
+}
+
+void mouseWheel(MouseEvent event) {
+  currentWindow.mouseWheel(event);
+}
+
+void keyPressed() {
+  currentWindow.keyPressed();
+}
+ArrayList<Story> getMostCommentedStories(ArrayList<Story> stories) {
+  ArrayList<Story> mostCommentedStories = new ArrayList<Story>();
+
+  for (Story m : stories) {
+    try {
+      if (m.numberOfComments() >= 10) {
+        mostCommentedStories.add(m);
+        Collections.sort(mostCommentedStories, commentSorter);
+      }
+    }
+    catch (Exception e) {
+    }
+  }
+  return mostCommentedStories;
+} 
+
+ArrayList<Story> getHighRatedStories(ArrayList<Story> stories) {
+  ArrayList<Story> highRatedStories = new ArrayList<Story>();
+
+  for (Story m : stories) {
+    try {
+      highRatedStories.add(m);
+      Collections.sort(highRatedStories, ratingSorter);
+    }
+    catch (Exception e) {
+    }
+  }
+  return highRatedStories;
+}
+
+
+
+
+void changeData() {
+  if (currentWindow.indexState == 2) {
+    currentWindow.setDataSource(mostComments);
+  } else {
+    currentWindow.setDataSource(stories);
+  }
+}

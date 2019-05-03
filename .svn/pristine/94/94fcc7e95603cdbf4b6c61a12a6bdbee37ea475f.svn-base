@@ -1,0 +1,55 @@
+interface SegmentedWidgetDelegate {
+  void selectedSegmentIndexChanged(int index);
+}
+
+class SegmentedWidget extends Widget implements ButtonDelegate {
+
+  private ArrayList<SegmentedButton> segments;
+  private int selectedSegmentIndex;
+  protected SegmentedWidgetDelegate delegate;
+  protected final int SPACING = 20;
+
+  SegmentedWidget(Rect frame, SegmentedWidgetDelegate delegate) {
+    super(frame);
+
+    this.backgroundColor = color(1, 0, 0, 0);
+    segments = new ArrayList<SegmentedButton>();
+    this.delegate = delegate;
+  }
+
+  void setSelectedSegmentIndex(int selectedSegmentIndex) throws ArrayIndexOutOfBoundsException {
+    if (!isSegmentIndexValid(selectedSegmentIndex) || selectedSegmentIndex == selectedSegmentIndex) return;
+    segments.get(selectedSegmentIndex).setChecked(false);
+    selectedSegmentIndex = selectedSegmentIndex;
+    segments.get(selectedSegmentIndex).setChecked(true);
+
+    if (delegate != null) delegate.selectedSegmentIndexChanged(selectedSegmentIndex);
+  }
+
+  void addSegment(String text) {
+    SegmentedButton segment;
+
+    if (segments.size() != 0) {
+      Rect previousFrame = segments.get(segments.size() - 1).frame;
+      segment = new SegmentedButton(new Rect(previousFrame.x + previousFrame.width + SPACING, frame.y, frame.height, 0), text, this);
+    } else {
+      segment = new SegmentedButton(new Rect(frame.x, frame.y, frame.height, 0), text, this);
+    }
+
+    addChildWidget(segment);
+  }
+
+  boolean isSegmentIndexValid(int index) throws ArrayIndexOutOfBoundsException {
+    if (index >= 0 && index < segments.size()) {
+      return true;
+    } else {
+      throw new ArrayIndexOutOfBoundsException("The segment index passed was out of range.");
+    }
+  }
+
+  void buttonClicked(Button button) {
+    int selectedSegmentIndex = segments.indexOf(button);
+    ((SegmentedButton)button).setChecked(true);
+    setSelectedSegmentIndex(selectedSegmentIndex);
+  }
+}

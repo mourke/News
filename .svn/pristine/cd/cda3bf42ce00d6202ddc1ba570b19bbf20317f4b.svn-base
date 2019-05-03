@@ -1,0 +1,16 @@
+Widget A = new Widget(120,120,100,100, 120, 180);
+
+void settings(){
+size(600,600);
+}
+
+void setup(){
+A.setup();
+}
+
+
+void draw(){
+A.draw();
+if (A.widgetClicked(mouseX, mouseY))
+  println("clicked");
+}

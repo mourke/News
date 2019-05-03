@@ -1,0 +1,37 @@
+JSONArray entries;
+
+void setup() {
+  size(800, 800);
+  String[] temps = loadStrings("data_10000.txt");
+  entries = new JSONArray();
+  
+  for (int i=0; i<temps.length; i++) {
+    String temp = temps[i];
+    JSONObject newObject = parseJSONObject(temp);
+    if (newObject != null) {
+      entries.append(newObject);
+    }
+  }
+  
+  //for(int i=0; i<entries.size(); i++) {
+  //  print(entries.get(i));
+  //}
+
+
+}
+
+void draw() {
+  background(0);
+    JSONObject test = entries.getJSONObject(16);
+  
+  if (test.getString("type").equals("comment")) {
+    String commentText = test.getString("text");
+    String author = test.getString("by");
+    text("Comment text: "+commentText+", author:"+author, 50, 50);
+  } else if (test.getString("type").equals("story")) {
+    String url = test.getString("url");
+    String title = test.getString("title");
+    String author = test.getString("by");
+    text("Url: "+url+", title: "+title+", author: "+author, 50, 50);
+  }
+}

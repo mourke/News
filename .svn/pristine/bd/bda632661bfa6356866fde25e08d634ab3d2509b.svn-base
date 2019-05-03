@@ -1,0 +1,27 @@
+import java.util.Scanner;
+class Graph{
+  ArrayList<String> list = new ArrayList<String>();
+  //time Grpah Constructor
+  Graph(String[] storyListArray, ){
+
+    for(int i = 0; i < storyListArray.length; i++){
+      if()
+      
+      
+    //  String s ="";
+    //String sub = s.substring(0, str1.indexOf('B'));
+    //String remainder = s.substring(10);
+    }
+    
+   
+
+    
+  }
+  
+  
+  
+  
+  
+  
+  
+}

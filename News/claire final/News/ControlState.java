@@ -1,0 +1,3 @@
+public enum ControlState {
+  NORMAL, HIGHLIGHTED, DISABLED, SELECTED, CUSTOM;
+}

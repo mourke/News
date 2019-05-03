@@ -1,0 +1,23 @@
+final int SCREEN_WIDTH = 1920;
+final int SCREEN_HEIGHT = 1080;
+
+final int QUERY_DEFAULT = 0;  // 'blank' screen, list of queries on left?
+final int QUERY_COMMENT_BY_USERNAME = 1;
+final int QUERY_STORY_BY_USERNAME = 2;
+
+final int EVENT_NULL = 0;
+final int EVENT_COMMENTS_BY_USERNAME = 1;
+final int EVENT_STORIES_BY_USERNAME = 2;
+
+final int WIDGET_WIDTH = 200;
+final int WIDGET_HEIGHT = 50;
+final int WIDGET_TEXT_SIZE = 32;
+
+final int QUERY_TEXT_SIZE = 32;
+
+final int TEXT_BOX_WIDTH = 200;
+final int TEXT_BOX_HEIGHT = 50;
+final color TEXT_BOX_BACKGROUND = color(255);
+final color TEXT_BOX_CLICKED = color(250,248,202);
+final color TEXT_BOX_TEXT = color(0);
+final int TEXT_BOX_FONT_SIZE = TEXT_BOX_HEIGHT/2;

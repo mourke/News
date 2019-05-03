@@ -1,0 +1,98 @@
+class User {
+
+  private String username;
+  private ArrayList<Story> userStories;
+  private ArrayList<Comment> userComments;
+  private int topScore;
+  private int numContributions;
+  private Date lastActivity;            // may be null
+  //private PImage pic;
+
+  public User(String username) {
+    this.username = username;
+
+    userStories = getStoriesByUsername(stories, username);
+    userComments = getCommentsByUsername(comments, username);
+
+    topScore = getTopScore(userStories);
+    lastActivity = findLastActivity(userStories, userComments);
+    numContributions = getNumContributions(userStories, userComments);
+  }
+
+  String username() {
+    return username;
+  }
+
+  ArrayList<Story> stories() {
+    return userStories;
+  }
+
+  ArrayList<Comment> comments() {
+    return userComments;
+  }
+  
+  int topScore() {
+    return topScore;
+  }
+  
+  int numContributions() {
+    return numContributions;
+  }
+  
+  Date lastActivity() {
+    return lastActivity;
+  }
+
+  int getTopScore(ArrayList<Story> stories) {
+    if (stories.size() == 0) {
+      return 0;
+    }
+    int record = 0;
+    for (Story s : stories) {
+      try {
+        if (s.score > record) {
+          record = s.score;
+        }
+      } 
+      catch (Exception e) {
+        println("No score for user "+username+" on story "+s.id());
+      }
+    }
+    return record;
+  }
+
+  Date findLastActivity(ArrayList<Story> userStories, ArrayList<Comment> userComments) {
+    //Long l = 1546300800*1000;                          // arbitrary time in 2019
+    Date latest = new Date(0);
+    println(latest);
+    for (Story s : userStories) {
+      try {
+        if (s.releaseDate().after(latest)) {
+          latest = s.releaseDate();
+        }
+      } 
+      catch (Exception e) {
+        println("No date for item "+s.id());
+      }
+    }
+     for (Comment c : userComments) {
+      try {
+        if (c.releaseDate().after(latest)) {
+          latest = c.releaseDate();
+        }
+      } 
+      catch (Exception e) {
+        println("No date for item "+c.id());
+      }
+    }
+    if (latest.equals(new Date(0))) {
+      return null;  // wasnt updated
+    } else {
+      return latest;
+    }
+  }
+  
+  int getNumContributions(ArrayList<Story> userStories, ArrayList<Comment> userComments) {
+    return userStories.size() + userComments.size();
+  }
+}

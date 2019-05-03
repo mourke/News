@@ -1,0 +1,136 @@
+final int SCREEN_HEIGHT = 750;
+final int SCREEN_WIDTH = 1000;
+
+public PFont titleFont;
+public PFont subtitleFont;
+public PFont textFont;
+public PFont captionFont;
+
+
+Window currentWindow;
+ MainWindow mainWindow;
+ Graph graph1;
+ timeFilter filter1;
+
+void settings() {
+  size(SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
+void setup() {
+  ArrayList<Comment> comments = new ArrayList<Comment>();
+  ArrayList<Story> stories = new ArrayList<Story>();
+
+  JSONArray array = loadJSONArray("news.json");
+
+  for (int i = 0; i < array.size(); ++i) {
+    JSONObject object = array.getJSONObject(i);
+    try {
+      if (object.getString("type").equals("story")) {
+        stories.add(new Story(object));
+      } else {
+        comments.add(new Comment(object));
+      }
+    } 
+    catch (Exception e) {
+      println(e);
+    }
+  }
+
+  titleFont = loadFont("titleFont.vlw");
+  subtitleFont = loadFont("subtitleFont.vlw");
+  textFont = loadFont("textFont.vlw");
+  captionFont = loadFont("captionFont.vlw");
+
+  mainWindow = new MainWindow();
+  mainWindow.setDataSource(stories);
+  currentWindow = mainWindow;
+  filter1 = new timeFilter(stories); 
+ 
+  graph1 = new Graph(filter1.getFirstDayOfWeek(filter1.startTime(2007,11)), stories);
+}
+
+void draw() {
+  currentWindow.draw();
+  switch(mainWindow.getIndexState()){
+       case 0:
+       
+      
+      break;
+       case 1:
+        
+
+      break;
+      case 2:
+     
+      
+      break;
+      case 3:
+      graph1.draw();
+      
+      
+      break;
+      
+      
+      
+    }
+}
+
+void mousePressed() {
+  currentWindow.mousePressed();
+  int[][] chartArray = graph1.getChartArray();
+   int mousexCheck = mouseX;
+   int mouseyCheck = mouseY;
+   
+   outer: for (int index=0; index<chartArray.length; index++) {
+
+      int tempBarX = 0;
+      int tempWidth = 0;
+      int currentYpos = 0;
+      int currentYHeight = 0;
+      for (int jIndex=0; jIndex <chartArray[index].length; jIndex ++) {
+        switch(jIndex) {
+        case 0:
+          tempBarX = chartArray[index][jIndex];
+
+          break;    
+        case 1:
+          tempWidth = chartArray[index][jIndex];
+
+          break;
+
+        case 2:
+          currentYpos = chartArray[index][jIndex];
+
+          break;
+
+        case 3:
+          currentYHeight = chartArray[index][jIndex];
+
+          break;
+        }
+      }
+      if (mouseX >= tempBarX && mouseX <= tempBarX+tempWidth && mouseY >= currentYpos && mouseY <= currentYpos+currentYHeight) {
+        println("got bar " +index);
+        graph1.getChartState(true, index);
+        break outer;
+      }
+    }
+  
+  
+}
+
+void mouseMoved() {
+  currentWindow.mouseMoved();
+}
+
+void mouseReleased() {
+  currentWindow.mouseReleased();
+}
+
+void mouseDragged() {
+  currentWindow.mouseDragged();
+}
+
+void mouseWheel(MouseEvent event) {
+  currentWindow.mouseWheel(event);
+}

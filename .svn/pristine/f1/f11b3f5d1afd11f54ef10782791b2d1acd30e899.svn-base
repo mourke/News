@@ -1,0 +1,47 @@
+import java.io.*;
+import java.util.*;
+class Graph extends Widget {
+
+  private ArrayList <Graph> graphArray;
+  private Map<Long, Item> mainMap=new TreeMap<Long, Item>();
+  Long s;
+
+  public Graph(int xpos, int ypos, int event, ArrayList<Graph> graphArray, String label, Long timeA, Map<Long, Item> mainMap) {    
+    super(xpos, ypos, WIDGET_HEIGHT, WIDGET_WIDTH, color(255), color(0), label, event);
+    this.graphArray = graphArray;
+    this.mainMap = mainMap;
+    s = 1553174124L;
+    
+    
+   
+  }
+
+  @Override
+    public void draw () {
+    background(255); 
+    textSize(WIDGET_TEXT_SIZE);
+    fill(255);
+    text(label(), xpos(), ypos());
+    rect(50,GRAPH_YPOS,WIDGET_WIDTH,getHeight(mainMap, s));
+  }
+  public int getHeight(Map<Long, Item> objectMap, Long timeA) {
+    int freqCount = 0;
+    Long initKey =0L;
+    long timeB = timeA + 86400000;
+    for (timeA = timeA; timeA<timeB; timeA++) {
+      if (objectMap.containsKey(timeA))
+        break;
+    };
+
+//mainMap.Entry<Long, Item>lowerEntry(timeA
+    while (timeA <= timeB) {
+
+      Long tempTime = objectMap.higherKey(timeA) ;
+      timeA = tempTime;
+
+
+      freqCount++;
+    }
+    return freqCount;
+  }
+}

@@ -1,0 +1,18 @@
+class RadioButton extends Widget {
+  
+  private ArrayList<RadioButton> buttonGroup;
+  
+  public RadioButton(int xpos, int ypos, int event, ArrayList<RadioButton> buttonGroup, String label) {    
+    super(xpos, ypos, WIDGET_HEIGHT, WIDGET_WIDTH, color(255), color(0), label, event);
+    this.buttonGroup = buttonGroup;
+  }
+  
+  @Override
+  public void draw() {
+    textSize(WIDGET_TEXT_SIZE);
+    fill(255);
+    text(label(), xpos(), ypos());
+    ellipseMode(CORNER);
+    ellipse(xpos() + textWidth(label()), ypos()-WIDGET_HEIGHT/2, WIDGET_TEXT_SIZE, WIDGET_TEXT_SIZE);
+  }
+}

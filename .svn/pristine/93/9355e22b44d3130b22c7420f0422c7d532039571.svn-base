@@ -1,0 +1,79 @@
+import java.text.SimpleDateFormat;
+
+class DetailWindow extends Window implements ButtonDelegate {
+
+  private Label storyTitleLabel;
+  private Label storyAuthorLabel;
+  private FlatButton storyURLButton;
+  private Label storyDateLabel;
+  private RatingWidget scoreWidget;
+
+  private Story story;
+  private Comment[] comments;
+
+  DetailWindow() {
+    super();
+
+    frame.origin.x = 375;
+    frame.size.width = width - frame.origin.x;
+    frame.origin.y = 100;
+    frame.size.height = height - frame.origin.y;
+
+    storyTitleLabel = new Label("Title", new Point(frame.origin.x + 70, frame.origin.y));
+    storyTitleLabel.setFont(subtitleFont);
+    storyTitleLabel.setMaxWidth(width - storyTitleLabel.frame.origin.x - 40);
+    storyTitleLabel.setMaxLines(4);
+
+    storyAuthorLabel = new Label("Author", new Point(storyTitleLabel.frame.origin.x, storyTitleLabel.frame.origin.y + storyTitleLabel.frame.size.height + 16));
+    storyAuthorLabel.setFont(captionFont);
+    storyAuthorLabel.setTextColor(color(0, 0, 0, 102));
+
+    storyURLButton = new FlatButton(new Rect(storyAuthorLabel.frame.origin.x + storyAuthorLabel.frame.size.width + 7, storyAuthorLabel.frame.origin.y, 0, 16), "URL", this);
+    storyURLButton.setFont(captionFont);
+   
+    storyDateLabel = new Label("Date", new Point(storyAuthorLabel.frame.origin.x, storyURLButton.frame.origin.y + storyURLButton.frame.size.height + 7));
+    storyDateLabel.setFont(captionFont);
+    storyDateLabel.setTextColor(color(0, 0, 0, 102));
+
+    scoreWidget = new RatingWidget(new Rect(width - 120, storyAuthorLabel.frame.origin.y, 0, 16), 3);
+
+    addChildWidgets(new Widget[] {storyTitleLabel, storyAuthorLabel, storyURLButton, storyDateLabel, scoreWidget});
+  }
+
+  void setStory(Story story) {
+    this.story = story;
+    this.storyTitleLabel.setText(story.title());
+    String author = story.author().substring(0, 1).toUpperCase() + story.author().substring(1).toLowerCase();
+
+    if (story.url.isPresent()) {
+      this.storyURLButton.setHidden(false);
+      this.storyAuthorLabel.setText("By " + author + ", ");
+      this.storyURLButton.frame.origin.x = storyAuthorLabel.frame.origin.x + storyAuthorLabel.frame.size.width; // update frame after author label size changes
+      this.storyURLButton.frame.origin.y = storyTitleLabel.frame.origin.y + storyTitleLabel.frame.size.height + 16;
+      this.storyURLButton.setMaxWidth(scoreWidget.frame.origin.x - storyURLButton.frame.origin.x - 10);
+      this.storyURLButton.setTitle(story.url.get().toString());
+    } else {
+      this.storyURLButton.setTitle("");
+      this.storyURLButton.setHidden(true);
+      this.storyAuthorLabel.setText("By " + author);
+    }
+    
+    this.storyAuthorLabel.frame.origin.y = storyURLButton.frame.origin.y;
+    
+    SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd MMMM yyyy HH:mm");
+    storyDateLabel.setText(formatter.format(story.releaseDate()));
+    storyDateLabel.frame.origin.y = storyURLButton.frame.origin.y + storyURLButton.frame.size.height + 7;
+    
+    try {
+      scoreWidget.setRating((story.score()/4)); // rating is out of 20 on the api
+      scoreWidget.frame.origin.y = storyURLButton.frame.origin.y;
+    } catch (IllegalArgumentException e) {
+      scoreWidget.setHidden(true);
+    }
+    
+  }
+
+  void buttonClicked(Button button) {
+    link(story.url.get().toString()); // no check for null here as button can only be pressed if the url is present
+  }
+}

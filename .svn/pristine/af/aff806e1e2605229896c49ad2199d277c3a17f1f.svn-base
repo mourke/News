@@ -1,0 +1,72 @@
+class Textbox {
+
+  private int x, y, width, height;
+  private boolean clicked;
+  private String text;
+
+  public Textbox(int x, int y, int width, int height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+
+    clicked = false;
+    text = "";
+  }
+
+  public Textbox(int x, int y) {
+    this(x, y, TEXT_BOX_WIDTH, TEXT_BOX_HEIGHT);
+  }
+
+  public void click() {
+    clicked = true;
+  }
+
+  public void deselect() {
+    clicked = false;
+  }
+  
+  public void draw() {
+    stroke(0);
+    if (clicked) {
+      fill(TEXT_BOX_CLICKED);
+    } else {
+      fill(TEXT_BOX_BACKGROUND);
+    }
+    rect(x, y, width, height);
+    fill(TEXT_BOX_TEXT);
+    textSize(TEXT_BOX_FONT_SIZE);
+    text(text, x + width/20, y + TEXT_BOX_FONT_SIZE*1.3);
+  }
+
+  public boolean withinBounds(int mX, int mY) {
+    return (mX >= x && mX <= x+width && mY >= y && mY <= y+height);
+  }
+
+  public boolean isSelected() {
+    return clicked;
+  }
+
+  public void appendCharacter(char c) {
+    if (!full(c)) {
+      text = text + c;
+    }
+  }
+  
+  public boolean full(char c) {
+    return (textWidth(text+c) > width - width/20); // would adding another char overflow textbox?
+  }
+  
+  public void removeChar() {
+    if (text.length()!=0) {
+      text = text.substring(0,text.length()-1);
+    }
+  }
+  
+  public void submitQuery() {
+    if (text.length() > 0) {
+      setUsername(text);
+      text = "";
+    }
+  }
+}
