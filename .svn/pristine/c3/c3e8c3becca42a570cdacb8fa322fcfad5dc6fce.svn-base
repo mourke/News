@@ -1,3 +1,0 @@
-enum Type {
-  COMMENT, STORY;
-}

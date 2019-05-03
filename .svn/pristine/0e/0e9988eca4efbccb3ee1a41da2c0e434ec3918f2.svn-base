@@ -1,8 +1,0 @@
-class MostRecentComparator implements Comparator<Story> {
-
-
-  @Override
-    public int compare(Story lhs, Story rhs) {
-    return lhs.releaseDate().compareTo(rhs.releaseDate());
-  }
-}
